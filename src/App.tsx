@@ -8,6 +8,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import PatientList from "./pages/PatientList";
+import PatientForm from "./pages/PatientForm";
+import PatientView from "./pages/PatientView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,39 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Patient Module Routes */}
+              <Route
+                path="/patient"
+                element={
+                  <ProtectedRoute>
+                    <PatientList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/patient/add"
+                element={
+                  <ProtectedRoute>
+                    <PatientForm />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/patient/edit/:id"
+                element={
+                  <ProtectedRoute>
+                    <PatientForm />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/patient/view/:id"
+                element={
+                  <ProtectedRoute>
+                    <PatientView />
                   </ProtectedRoute>
                 }
               />
