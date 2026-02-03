@@ -2,117 +2,7 @@ import { useState, useCallback } from 'react';
 import { Patient, DropdownOption } from '@/types/patient';
 
 const API_BASE_URL = 'http://localhost:5226/api';
-
-// Mock data for development (when API is not available)
-const mockPatients: Patient[] = [
-  {
-    id: 1,
-    title: 'Mr.',
-    firstName: 'John',
-    middleName: 'Robert',
-    lastName: 'Doe',
-    gender: 'Male',
-    mobileNumber: '9876543210',
-    dateOfBirth: '1990-05-15',
-    email: 'john.doe@email.com',
-    bloodGroup: 'O+',
-    maritalStatus: 'Single',
-    city: 'Mumbai',
-    state: 'Maharashtra',
-  },
-  {
-    id: 2,
-    title: 'Mrs.',
-    firstName: 'Jane',
-    lastName: 'Smith',
-    gender: 'Female',
-    mobileNumber: '9876543211',
-    dateOfBirth: '1985-08-22',
-    email: 'jane.smith@email.com',
-    bloodGroup: 'A+',
-    maritalStatus: 'Married',
-    city: 'Delhi',
-    state: 'Delhi',
-  },
-  {
-    id: 3,
-    title: 'Ms.',
-    firstName: 'Emily',
-    lastName: 'Johnson',
-    gender: 'Female',
-    mobileNumber: '9876543212',
-    dateOfBirth: '1995-12-10',
-    email: 'emily.j@email.com',
-    bloodGroup: 'B+',
-    maritalStatus: 'Single',
-    city: 'Bangalore',
-    state: 'Karnataka',
-  },
-];
-
-const mockDropdowns: Record<string, DropdownOption[]> = {
-  title: [
-    { id: 1, name: 'Mr.' },
-    { id: 2, name: 'Mrs.' },
-    { id: 3, name: 'Ms.' },
-    { id: 4, name: 'Miss' },
-    { id: 5, name: 'Dr.' },
-    { id: 6, name: 'Master' },
-    { id: 7, name: 'Baby' },
-  ],
-  bloodGroup: [
-    { id: 1, name: 'A+' },
-    { id: 2, name: 'A-' },
-    { id: 3, name: 'B+' },
-    { id: 4, name: 'B-' },
-    { id: 5, name: 'AB+' },
-    { id: 6, name: 'AB-' },
-    { id: 7, name: 'O+' },
-    { id: 8, name: 'O-' },
-  ],
-  relation: [
-    { id: 1, name: 'Father' },
-    { id: 2, name: 'Mother' },
-    { id: 3, name: 'Spouse' },
-    { id: 4, name: 'Sibling' },
-    { id: 5, name: 'Child' },
-    { id: 6, name: 'Other' },
-  ],
-  area: [
-    { id: 1, name: 'Downtown' },
-    { id: 2, name: 'Suburb' },
-    { id: 3, name: 'Industrial' },
-    { id: 4, name: 'Residential' },
-  ],
-  city: [
-    { id: 1, name: 'Mumbai' },
-    { id: 2, name: 'Delhi' },
-    { id: 3, name: 'Bangalore' },
-    { id: 4, name: 'Chennai' },
-    { id: 5, name: 'Hyderabad' },
-    { id: 6, name: 'Pune' },
-  ],
-  state: [
-    { id: 1, name: 'Maharashtra' },
-    { id: 2, name: 'Delhi' },
-    { id: 3, name: 'Karnataka' },
-    { id: 4, name: 'Tamil Nadu' },
-    { id: 5, name: 'Telangana' },
-    { id: 6, name: 'Gujarat' },
-  ],
-  consultant: [
-    { id: 1, name: 'Dr. Sharma' },
-    { id: 2, name: 'Dr. Patel' },
-    { id: 3, name: 'Dr. Singh' },
-    { id: 4, name: 'Dr. Kumar' },
-  ],
-  referredBy: [
-    { id: 1, name: 'Self' },
-    { id: 2, name: 'Hospital Referral' },
-    { id: 3, name: 'Doctor Referral' },
-    { id: 4, name: 'Insurance' },
-  ],
-};
+const ADMIN_API_URL = 'http://localhost:5226/api/admin';
 
 export const usePatientApi = () => {
   const [loading, setLoading] = useState(false);
@@ -127,8 +17,9 @@ export const usePatientApi = () => {
       const data = await response.json();
       return data;
     } catch (err) {
-      console.warn('API not available, using mock data');
-      return mockPatients;
+      console.warn('API not available, returning empty list');
+      setError('Unable to fetch patients');
+      return [];
     } finally {
       setLoading(false);
     }
@@ -142,8 +33,9 @@ export const usePatientApi = () => {
       if (!response.ok) throw new Error('Failed to fetch patient');
       return await response.json();
     } catch (err) {
-      console.warn('API not available, using mock data');
-      return mockPatients.find(p => p.id === id) || null;
+      console.warn('API not available');
+      setError('Unable to fetch patient');
+      return null;
     } finally {
       setLoading(false);
     }
@@ -161,10 +53,8 @@ export const usePatientApi = () => {
       if (!response.ok) throw new Error('Failed to create patient');
       return await response.json();
     } catch (err) {
-      console.warn('API not available, simulating create');
-      const newPatient = { ...patient, id: Date.now() };
-      mockPatients.push(newPatient);
-      return newPatient;
+      console.error('Failed to create patient:', err);
+      throw new Error('Failed to create patient');
     } finally {
       setLoading(false);
     }
@@ -182,13 +72,8 @@ export const usePatientApi = () => {
       if (!response.ok) throw new Error('Failed to update patient');
       return await response.json();
     } catch (err) {
-      console.warn('API not available, simulating update');
-      const index = mockPatients.findIndex(p => p.id === id);
-      if (index !== -1) {
-        mockPatients[index] = { ...patient, id };
-        return mockPatients[index];
-      }
-      throw new Error('Patient not found');
+      console.error('Failed to update patient:', err);
+      throw new Error('Failed to update patient');
     } finally {
       setLoading(false);
     }
@@ -203,27 +88,34 @@ export const usePatientApi = () => {
       });
       if (!response.ok) throw new Error('Failed to delete patient');
     } catch (err) {
-      console.warn('API not available, simulating delete');
-      const index = mockPatients.findIndex(p => p.id === id);
-      if (index !== -1) {
-        mockPatients.splice(index, 1);
-      }
+      console.error('Failed to delete patient:', err);
+      throw new Error('Failed to delete patient');
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // Dropdown data fetchers - calls admin API endpoints
   const fetchDropdownData = useCallback(async (type: string): Promise<DropdownOption[]> => {
     try {
-      const endpoint = type.charAt(0).toUpperCase() + type.slice(1);
-      const response = await fetch(`${API_BASE_URL}/${endpoint}`);
+      const response = await fetch(`${ADMIN_API_URL}/${type}`);
       if (!response.ok) throw new Error(`Failed to fetch ${type}`);
       return await response.json();
     } catch (err) {
-      console.warn(`API not available for ${type}, using mock data`);
-      return mockDropdowns[type] || [];
+      console.warn(`API not available for ${type}`);
+      return [];
     }
   }, []);
+
+  const fetchTitles = useCallback(() => fetchDropdownData('title'), [fetchDropdownData]);
+  const fetchBloodGroups = useCallback(() => fetchDropdownData('bloodgroup'), [fetchDropdownData]);
+  const fetchAreas = useCallback(() => fetchDropdownData('area'), [fetchDropdownData]);
+  const fetchCities = useCallback(() => fetchDropdownData('city'), [fetchDropdownData]);
+  const fetchStates = useCallback(() => fetchDropdownData('state'), [fetchDropdownData]);
+  const fetchRelations = useCallback(() => fetchDropdownData('relation'), [fetchDropdownData]);
+  const fetchConsultants = useCallback(() => fetchDropdownData('consultant'), [fetchDropdownData]);
+  const fetchReferredBy = useCallback(() => fetchDropdownData('referredby'), [fetchDropdownData]);
+  const fetchPatientCategories = useCallback(() => fetchDropdownData('patientcategory'), [fetchDropdownData]);
 
   return {
     loading,
@@ -234,5 +126,14 @@ export const usePatientApi = () => {
     updatePatient,
     deletePatient,
     fetchDropdownData,
+    fetchTitles,
+    fetchBloodGroups,
+    fetchAreas,
+    fetchCities,
+    fetchStates,
+    fetchRelations,
+    fetchConsultants,
+    fetchReferredBy,
+    fetchPatientCategories,
   };
 };

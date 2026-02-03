@@ -6,9 +6,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { useModule, ModuleType } from '@/contexts/ModuleContext';
 
-const modules = [
-  { id: 'admin', name: 'Admin', icon: Users, path: '/dashboard', colorClass: 'text-primary' },
+const modules: { id: ModuleType; name: string; icon: typeof Users; path: string; colorClass: string }[] = [
+  { id: 'admin', name: 'Admin', icon: Users, path: '/admin', colorClass: 'text-primary' },
   { id: 'clinical', name: 'Clinical', icon: Stethoscope, path: '/clinical', colorClass: 'text-success' },
   { id: 'patient', name: 'Patient', icon: UserCircle, path: '/patient', colorClass: 'text-primary' },
   { id: 'billing', name: 'Billing', icon: CreditCard, path: '/billing', colorClass: 'text-warning' },
@@ -21,8 +22,10 @@ interface AppSwitcherProps {
 
 export const AppSwitcher = ({ variant = 'default' }: AppSwitcherProps) => {
   const navigate = useNavigate();
+  const { setCurrentModule } = useModule();
 
-  const handleModuleClick = (path: string) => {
+  const handleModuleClick = (moduleId: ModuleType, path: string) => {
+    setCurrentModule(moduleId);
     navigate(path);
   };
 
@@ -42,7 +45,7 @@ export const AppSwitcher = ({ variant = 'default' }: AppSwitcherProps) => {
           {modules.map((module) => (
             <button
               key={module.id}
-              onClick={() => handleModuleClick(module.path)}
+              onClick={() => handleModuleClick(module.id, module.path)}
               className="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-accent transition-colors group"
             >
               <div className={`p-2 rounded-lg bg-accent group-hover:scale-110 transition-transform ${module.colorClass}`}>

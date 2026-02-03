@@ -1,26 +1,49 @@
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Users, 
+  UserPlus,
+  Search,
   Stethoscope, 
-  UserCircle, 
-  CreditCard, 
+  Calendar,
   FileText,
+  TestTube,
+  CreditCard, 
+  Receipt,
+  BarChart3,
+  DollarSign,
+  Activity,
+  FileSpreadsheet,
+  Shield,
   Settings,
+  Database,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  LucideIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useModule } from '@/contexts/ModuleContext';
 
-const menuItems = [
-  { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard, active: true },
-  { id: 'admin', name: 'Admin', icon: Users },
-  { id: 'clinical', name: 'Clinical', icon: Stethoscope },
-  { id: 'patients', name: 'Patients', icon: UserCircle },
-  { id: 'billing', name: 'Billing', icon: CreditCard },
-  { id: 'reports', name: 'Reports', icon: FileText },
-  { id: 'settings', name: 'Settings', icon: Settings },
-];
+const iconMap: Record<string, LucideIcon> = {
+  LayoutDashboard,
+  Users,
+  UserPlus,
+  Search,
+  Stethoscope,
+  Calendar,
+  FileText,
+  TestTube,
+  CreditCard,
+  Receipt,
+  BarChart3,
+  DollarSign,
+  Activity,
+  FileSpreadsheet,
+  Shield,
+  Settings,
+  Database,
+};
 
 interface SidebarProps {
   isOpen: boolean;
@@ -28,6 +51,21 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { moduleConfig } = useModule();
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+  };
+
+  const isActivePath = (path: string) => {
+    if (path === '/patient' && location.pathname === '/patient') return true;
+    if (path === '/patient/add' && location.pathname === '/patient/add') return true;
+    if (path !== '/patient' && path !== '/patient/add' && location.pathname.startsWith(path)) return true;
+    return location.pathname === path;
+  };
+
   return (
     <aside
       className={cn(
@@ -35,22 +73,37 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
         isOpen ? 'w-64' : 'w-16'
       )}
     >
-      <div className="flex-1 py-4">
+      {/* Module Title */}
+      {isOpen && (
+        <div className="px-4 py-3 border-b border-sidebar-border">
+          <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">
+            {moduleConfig.name}
+          </h2>
+        </div>
+      )}
+
+      <div className="flex-1 py-4 overflow-y-auto">
         <nav className="space-y-1 px-2">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              className={cn(
-                'sidebar-item w-full',
-                item.active ? 'sidebar-item-active' : 'sidebar-item-inactive'
-              )}
-            >
-              <item.icon className="h-5 w-5 flex-shrink-0" />
-              {isOpen && (
-                <span className="animate-fade-in truncate">{item.name}</span>
-              )}
-            </button>
-          ))}
+          {moduleConfig.menuItems.map((item) => {
+            const IconComponent = iconMap[item.icon] || LayoutDashboard;
+            const isActive = isActivePath(item.path);
+
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavigation(item.path)}
+                className={cn(
+                  'sidebar-item w-full',
+                  isActive ? 'sidebar-item-active' : 'sidebar-item-inactive'
+                )}
+              >
+                <IconComponent className="h-5 w-5 flex-shrink-0" />
+                {isOpen && (
+                  <span className="animate-fade-in truncate">{item.name}</span>
+                )}
+              </button>
+            );
+          })}
         </nav>
       </div>
       

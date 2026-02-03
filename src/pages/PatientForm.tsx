@@ -29,7 +29,7 @@ const patientSchema = z.object({
     .regex(/^[a-zA-Z\s]*$/, 'Last name cannot contain numbers')
     .optional()
     .or(z.literal('')),
-  gender: z.string().optional(),
+  gender: z.string().min(1, 'Gender is required'),
   mobileNumber: z
     .string()
     .min(1, 'Mobile number is required')
@@ -41,26 +41,15 @@ const patientSchema = z.object({
       (val) => !val || new Date(val) < new Date(),
       'Date of birth must be less than today'
     ),
+  age: z.number().optional(),
+  ageUnit: z.enum(['years', 'months', 'days']).optional(),
   email: z
     .string()
     .email('Invalid email format')
     .optional()
     .or(z.literal('')),
   bloodGroup: z.string().optional(),
-  maritalStatus: z.string().min(1, 'Marital status is required'),
-  consultant: z.string().optional(),
-  referredBy: z.string().optional(),
-  patientImage: z.string().optional(),
-  healthId: z
-    .string()
-    .regex(/^(\d{14})?$/, 'Health ID must be exactly 14 digits')
-    .optional()
-    .or(z.literal('')),
-  aadharNumber: z
-    .string()
-    .regex(/^(\d{12})?$/, 'Aadhar must be exactly 12 digits')
-    .optional()
-    .or(z.literal('')),
+  maritalStatus: z.string().optional().default('Single'),
   attendantName: z
     .string()
     .regex(/^[a-zA-Z\s]*$/, 'Attendant name cannot contain numbers')
@@ -71,25 +60,69 @@ const patientSchema = z.object({
     .regex(/^(\d{10})?$/, 'Phone must be exactly 10 digits')
     .optional()
     .or(z.literal('')),
-  nextOfKinName: z.string().optional(),
+  address: z.string().min(1, 'Address is required'),
+  zipcode: z.string().min(1, 'Zipcode is required'),
+  area: z.string().min(1, 'Area is required'),
+  city: z.string().min(1, 'City is required'),
+  state: z.string().min(1, 'State is required'),
+  patientCategory: z.string().optional(),
+  healthId: z
+    .string()
+    .regex(/^(\d{14})?$/, 'Health ID must be exactly 14 digits')
+    .optional()
+    .or(z.literal('')),
+  aadharNumber: z
+    .string()
+    .regex(/^(\d{12})?$/, 'Aadhar must be exactly 12 digits')
+    .optional()
+    .or(z.literal('')),
+  staffIpNo: z
+    .string()
+    .regex(/^[a-zA-Z\s]*$/, 'Staff/IP No cannot contain numbers')
+    .max(20, 'Max 20 characters')
+    .optional()
+    .or(z.literal('')),
+  oldRegNo: z
+    .string()
+    .regex(/^[a-zA-Z\s]*$/, 'Old RegNo cannot contain numbers')
+    .max(20, 'Max 20 characters')
+    .optional()
+    .or(z.literal('')),
+  patientImage: z.string().optional(),
+  nextOfKinName: z
+    .string()
+    .regex(/^[a-zA-Z\s]*$/, 'Next of kin name cannot contain numbers')
+    .optional()
+    .or(z.literal('')),
   nextOfKinPhone: z
     .string()
     .regex(/^(\d{10})?$/, 'Phone must be exactly 10 digits')
     .optional()
     .or(z.literal('')),
-  address: z.string().optional(),
-  zipcode: z.string().optional(),
-  area: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
+  nextOfKinRelation: z.string().optional(),
+  consultant: z.string().optional(),
+  referredBy: z.string().optional(),
 });
 
 const PatientForm = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
-  const { fetchPatientById, createPatient, updatePatient, fetchDropdownData, loading } =
-    usePatientApi();
+  const {
+    fetchPatientById,
+    createPatient,
+    updatePatient,
+    fetchTitles,
+    fetchBloodGroups,
+    fetchAreas,
+    fetchCities,
+    fetchStates,
+    fetchRelations,
+    fetchConsultants,
+    fetchReferredBy,
+    fetchPatientCategories,
+    loading,
+  } = usePatientApi();
 
   const isEditMode = !!id;
 
@@ -101,6 +134,8 @@ const PatientForm = () => {
     areas: [] as DropdownOption[],
     cities: [] as DropdownOption[],
     states: [] as DropdownOption[],
+    relations: [] as DropdownOption[],
+    patientCategories: [] as DropdownOption[],
   });
 
   const form = useForm<Patient>({
@@ -116,40 +151,46 @@ const PatientForm = () => {
       email: '',
       bloodGroup: '',
       maritalStatus: 'Single',
-      consultant: '',
-      referredBy: '',
-      patientImage: '',
-      healthId: '',
-      aadharNumber: '',
       attendantName: '',
       attendantPhone: '',
-      nextOfKinName: '',
-      nextOfKinPhone: '',
       address: '',
       zipcode: '',
       area: '',
       city: '',
       state: '',
+      patientCategory: '',
+      healthId: '',
+      aadharNumber: '',
+      staffIpNo: '',
+      oldRegNo: '',
+      patientImage: '',
+      nextOfKinName: '',
+      nextOfKinPhone: '',
+      nextOfKinRelation: '',
+      consultant: '',
+      referredBy: '',
     },
   });
 
   useEffect(() => {
     const loadDropdowns = async () => {
-      const [titles, bloodGroups, consultants, referredBy, areas, cities, states] =
+      const [titles, bloodGroups, consultants, referredBy, areas, cities, states, relations, patientCategories] =
         await Promise.all([
-          fetchDropdownData('title'),
-          fetchDropdownData('bloodGroup'),
-          fetchDropdownData('consultant'),
-          fetchDropdownData('referredBy'),
-          fetchDropdownData('area'),
-          fetchDropdownData('city'),
-          fetchDropdownData('state'),
+          fetchTitles(),
+          fetchBloodGroups(),
+          fetchConsultants(),
+          fetchReferredBy(),
+          fetchAreas(),
+          fetchCities(),
+          fetchStates(),
+          fetchRelations(),
+          fetchPatientCategories(),
         ]);
-      setDropdowns({ titles, bloodGroups, consultants, referredBy, areas, cities, states });
+      setDropdowns({ titles, bloodGroups, consultants, referredBy, areas, cities, states, relations, patientCategories });
     };
 
     loadDropdowns();
-  }, [fetchDropdownData]);
+  }, [fetchTitles, fetchBloodGroups, fetchConsultants, fetchReferredBy, fetchAreas, fetchCities, fetchStates, fetchRelations, fetchPatientCategories]);
 
   useEffect(() => {
     if (isEditMode && id) {
