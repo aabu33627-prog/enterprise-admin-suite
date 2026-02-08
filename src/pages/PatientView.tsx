@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Pencil, User, Phone, MapPin, Heart, FileText } from 'lucide-react';
-import { Patient } from '@/types/patient';
+import { ArrowLeft, Pencil, User, Phone, MapPin, Heart, FileText, Globe, Briefcase } from 'lucide-react';
+import { PatientListByIdDTO } from '@/types/patient';
 import { usePatientApi } from '@/hooks/usePatientApi';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 
 const PatientView = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { fetchPatientById, loading } = usePatientApi();
-  const [patient, setPatient] = useState<Patient | null>(null);
+  const [patient, setPatient] = useState<PatientListByIdDTO | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -35,12 +34,21 @@ const PatientView = () => {
     );
   }
 
-  const InfoItem = ({ label, value }: { label: string; value?: string }) => (
+  const InfoItem = ({ label, value }: { label: string; value?: string | number | null }) => (
     <div className="space-y-1">
       <p className="text-sm text-muted-foreground">{label}</p>
       <p className="font-medium">{value || '-'}</p>
     </div>
   );
+
+  const formatDate = (dateStr: string | null): string => {
+    if (!dateStr) return '-';
+    try {
+      return new Date(dateStr).toLocaleDateString();
+    } catch {
+      return dateStr;
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -53,9 +61,7 @@ const PatientView = () => {
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-foreground">Patient Details</h1>
-              <p className="text-muted-foreground">
-                View complete patient information
-              </p>
+              <p className="text-muted-foreground">View complete patient information</p>
             </div>
           </div>
           <Button onClick={() => navigate(`/patient/edit/${id}`)}>
@@ -73,15 +79,16 @@ const PatientView = () => {
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-bold">
-                  {patient.title} {patient.firstName} {patient.middleName} {patient.lastName}
+                  {patient.First_Name} {patient.Middle_name} {patient.Last_Name}
                 </h2>
-                <p className="text-muted-foreground">Patient ID: {patient.id}</p>
+                <p className="text-muted-foreground">Patient ID: {patient.Patient_ID} | Code: {patient.Code}</p>
                 <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="secondary">{patient.gender}</Badge>
-                  {patient.bloodGroup && (
-                    <Badge variant="outline">{patient.bloodGroup}</Badge>
-                  )}
-                  <Badge variant="default">{patient.maritalStatus}</Badge>
+                  <Badge variant="secondary">{patient.Gender}</Badge>
+                  {patient.Blood_group && <Badge variant="outline">{patient.Blood_group}</Badge>}
+                  <Badge variant="default">{patient.Marital_status || 'Single'}</Badge>
+                  <Badge variant={patient.Is_Active === 1 ? 'default' : 'secondary'}>
+                    {patient.Is_Active === 1 ? 'Active' : 'Inactive'}
+                  </Badge>
                 </div>
               </div>
             </div>
@@ -93,26 +100,18 @@ const PatientView = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-primary" />
-                Personal Information
+                <User className="h-5 w-5 text-primary" />Personal Information
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="Title" value={patient.title} />
-              <InfoItem label="First Name" value={patient.firstName} />
-              <InfoItem label="Middle Name" value={patient.middleName} />
-              <InfoItem label="Last Name" value={patient.lastName} />
-              <InfoItem label="Gender" value={patient.gender} />
-              <InfoItem
-                label="Date of Birth"
-                value={
-                  patient.dateOfBirth
-                    ? new Date(patient.dateOfBirth).toLocaleDateString()
-                    : undefined
-                }
-              />
-              <InfoItem label="Blood Group" value={patient.bloodGroup} />
-              <InfoItem label="Marital Status" value={patient.maritalStatus} />
+              <InfoItem label="First Name" value={patient.First_Name} />
+              <InfoItem label="Middle Name" value={patient.Middle_name} />
+              <InfoItem label="Last Name" value={patient.Last_Name} />
+              <InfoItem label="Gender" value={patient.Gender} />
+              <InfoItem label="Date of Birth" value={formatDate(patient.DateOfBirth)} />
+              <InfoItem label="Age" value={patient.Age} />
+              <InfoItem label="Blood Group" value={patient.Blood_group} />
+              <InfoItem label="Marital Status" value={patient.Marital_status} />
             </CardContent>
           </Card>
 
@@ -120,15 +119,17 @@ const PatientView = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Phone className="h-5 w-5 text-primary" />
-                Contact Information
+                <Phone className="h-5 w-5 text-primary" />Contact Information
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="Mobile Number" value={patient.mobileNumber} />
-              <InfoItem label="Email" value={patient.email} />
-              <InfoItem label="Attendant Name" value={patient.attendantName} />
-              <InfoItem label="Attendant Phone" value={patient.attendantPhone} />
+              <InfoItem label="Mobile Number" value={patient.Mobile_number} />
+              <InfoItem label="Email" value={patient.Email_id} />
+              <InfoItem label="Fax Number" value={patient.Fax_number} />
+              <InfoItem label="Website" value={patient.Website} />
+              <InfoItem label="Attendant" value={patient.Attendent} />
+              <InfoItem label="Attendant Relationship" value={patient.Attend_Relationship} />
+              <InfoItem label="Spouse Number" value={patient.Spouse_Number} />
             </CardContent>
           </Card>
 
@@ -136,18 +137,17 @@ const PatientView = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-primary" />
-                Address Information
+                <MapPin className="h-5 w-5 text-primary" />Address Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <InfoItem label="Address" value={patient.address} />
-              <div className="grid grid-cols-2 gap-4">
-                <InfoItem label="Area" value={patient.area} />
-                <InfoItem label="City" value={patient.city} />
-                <InfoItem label="State" value={patient.state} />
-                <InfoItem label="Zipcode" value={patient.zipcode} />
-              </div>
+            <CardContent className="grid grid-cols-2 gap-4">
+              <InfoItem label="Address Line 1" value={patient.Address_line1} />
+              <InfoItem label="Address Line 2" value={patient.Address_line2} />
+              <InfoItem label="Area ID" value={patient.Area_Id} />
+              <InfoItem label="City ID" value={patient.City_Id} />
+              <InfoItem label="State ID" value={patient.State_Id} />
+              <InfoItem label="Country ID" value={patient.Country_Id} />
+              <InfoItem label="Zipcode" value={patient.ZipCode} />
             </CardContent>
           </Card>
 
@@ -155,13 +155,12 @@ const PatientView = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Heart className="h-5 w-5 text-primary" />
-                Emergency Contact
+                <Heart className="h-5 w-5 text-primary" />Emergency Contact
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="Next of Kin Name" value={patient.nextOfKinName} />
-              <InfoItem label="Next of Kin Phone" value={patient.nextOfKinPhone} />
+              <InfoItem label="Next of Kin" value={patient.NextOfKin} />
+              <InfoItem label="Relation ID" value={patient.Relation_ID} />
             </CardContent>
           </Card>
 
@@ -169,27 +168,76 @@ const PatientView = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
-                Identification
+                <FileText className="h-5 w-5 text-primary" />Identification
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="Health ID" value={patient.healthId} />
-              <InfoItem label="Aadhar Number" value={patient.aadharNumber} />
+              <InfoItem label="Aadhar No" value={patient.AdharNo} />
+              <InfoItem label="Health ID" value={patient.HealthID} />
+              <InfoItem label="Other ID 1" value={patient.OtherID1} />
+              <InfoItem label="Other ID 2" value={patient.OtherID2} />
+              <InfoItem label="Other ID 3" value={patient.OtherID3} />
+              <InfoItem label="ID Card Type" value={patient.IdentityCardType} />
+              <InfoItem label="Staff Number" value={patient.Staff_Number} />
+              <InfoItem label="Old Reg No" value={patient.OldRegNo} />
+              <InfoItem label="External Ref No" value={patient.External_RefNo} />
             </CardContent>
           </Card>
 
-          {/* Other Details */}
+          {/* Professional Details */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
-                Other Details
+                <Briefcase className="h-5 w-5 text-primary" />Professional Details
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="Consultant" value={patient.consultant} />
-              <InfoItem label="Referred By" value={patient.referredBy} />
+              <InfoItem label="Consultant ID" value={patient.Consultant_id} />
+              <InfoItem label="Referring Doctor ID" value={patient.ReferringDoctor_ID} />
+              <InfoItem label="Organization ID" value={patient.Organization_ID} />
+              <InfoItem label="Patient Category ID" value={patient.PatientCategory_ID} />
+              <InfoItem label="Referral Source" value={patient.ReferralSource} />
+              <InfoItem label="Education" value={patient.Education} />
+              <InfoItem label="Occupation" value={patient.Occupation} />
+              <InfoItem label="Monthly Income" value={patient.Monthly_Income} />
+            </CardContent>
+          </Card>
+
+          {/* International Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5 text-primary" />International Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4">
+              <InfoItem label="Passport No" value={patient.PassportNo} />
+              <InfoItem label="Passport Details" value={patient.PassportDetails} />
+              <InfoItem label="Passport Expiry" value={formatDate(patient.PassportExpiry)} />
+              <InfoItem label="Visa No" value={patient.VisaNo} />
+              <InfoItem label="Visa Expiry" value={formatDate(patient.VisaExpiryDate)} />
+              <InfoItem label="International" value={patient.is_international} />
+              <InfoItem label="Emergency" value={patient.is_emergency} />
+              <InfoItem label="Baby" value={patient.is_baby} />
+            </CardContent>
+          </Card>
+
+          {/* System Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />System Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4">
+              <InfoItem label="Hospital ID" value={patient.Hospital_id} />
+              <InfoItem label="Registration Date" value={formatDate(patient.Reg_Date)} />
+              <InfoItem label="Validate Date" value={formatDate(patient.Validate_Date)} />
+              <InfoItem label="Created By" value={patient.Created_by} />
+              <InfoItem label="Created Date" value={formatDate(patient.Created_date)} />
+              <InfoItem label="Updated By" value={patient.Updated_by} />
+              <InfoItem label="Updated Date" value={formatDate(patient.Updated_date)} />
+              <InfoItem label="Remarks" value={patient.Remarks} />
             </CardContent>
           </Card>
         </div>

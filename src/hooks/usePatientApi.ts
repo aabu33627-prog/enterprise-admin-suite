@@ -1,5 +1,12 @@
 import { useState, useCallback } from 'react';
-import { Patient, DropdownOption } from '@/types/patient';
+import {
+  PatientListDTO,
+  PatientListByIdDTO,
+  PatientCreateDTO,
+  PatientUpdateDTO,
+  PatientDeleteDTO,
+  DropdownOption,
+} from '@/types/patient';
 
 const API_BASE_URL = 'http://localhost:5226/api';
 const ADMIN_API_URL = 'http://localhost:5226/api/admin';
@@ -8,14 +15,14 @@ export const usePatientApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPatients = useCallback(async (): Promise<Patient[]> => {
+  // GET /api/patient?hospitalId=1
+  const fetchPatients = useCallback(async (hospitalId: number = 1): Promise<PatientListDTO[]> => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/patient`);
+      const response = await fetch(`${API_BASE_URL}/patient?hospitalId=${hospitalId}`);
       if (!response.ok) throw new Error('Failed to fetch patients');
-      const data = await response.json();
-      return data;
+      return await response.json();
     } catch (err) {
       console.warn('API not available, returning empty list');
       setError('Unable to fetch patients');
@@ -25,11 +32,12 @@ export const usePatientApi = () => {
     }
   }, []);
 
-  const fetchPatientById = useCallback(async (id: number): Promise<Patient | null> => {
+  // GET /api/patient/{id}?hospitalId=1
+  const fetchPatientById = useCallback(async (id: number, hospitalId: number = 1): Promise<PatientListByIdDTO | null> => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/patient/${id}`);
+      const response = await fetch(`${API_BASE_URL}/patient/${id}?hospitalId=${hospitalId}`);
       if (!response.ok) throw new Error('Failed to fetch patient');
       return await response.json();
     } catch (err) {
@@ -41,7 +49,8 @@ export const usePatientApi = () => {
     }
   }, []);
 
-  const createPatient = useCallback(async (patient: Patient): Promise<Patient> => {
+  // POST /api/patient
+  const createPatient = useCallback(async (patient: PatientCreateDTO): Promise<any> => {
     setLoading(true);
     setError(null);
     try {
@@ -60,11 +69,12 @@ export const usePatientApi = () => {
     }
   }, []);
 
-  const updatePatient = useCallback(async (id: number, patient: Patient): Promise<Patient> => {
+  // PUT /api/patient (no ID in URL, full object in body)
+  const updatePatient = useCallback(async (patient: PatientUpdateDTO): Promise<any> => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/patient/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/patient`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(patient),
@@ -79,14 +89,18 @@ export const usePatientApi = () => {
     }
   }, []);
 
-  const deletePatient = useCallback(async (id: number): Promise<void> => {
+  // DELETE /api/patient (body payload, no ID in URL)
+  const deletePatient = useCallback(async (payload: PatientDeleteDTO): Promise<any> => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/patient/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/patient`, {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
       if (!response.ok) throw new Error('Failed to delete patient');
+      return await response.json();
     } catch (err) {
       console.error('Failed to delete patient:', err);
       throw new Error('Failed to delete patient');
@@ -95,7 +109,7 @@ export const usePatientApi = () => {
     }
   }, []);
 
-  // Dropdown data fetchers - calls admin API endpoints
+  // Dropdown data fetchers - calls admin API endpoints (NOT MODIFIED)
   const fetchDropdownData = useCallback(async (type: string): Promise<DropdownOption[]> => {
     try {
       const response = await fetch(`${ADMIN_API_URL}/${type}`);
