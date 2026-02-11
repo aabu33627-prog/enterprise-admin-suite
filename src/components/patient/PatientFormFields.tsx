@@ -65,7 +65,7 @@ export interface PatientFormValues {
   emergency: string;
   baby: string;
   patientimage: string;
-  referralsource: string;
+  referralsource: number;
   patient_uhid: string;
   referredby_mobile_no: string;
   referredby_name: string;
@@ -88,6 +88,10 @@ interface PatientFormFieldsProps {
 }
 
 export const PatientFormFields = ({ form, dropdowns, onTitleChange }: PatientFormFieldsProps) => {
+  // DEBUG: Watch validation errors
+useEffect(() => {
+  console.log("FORM VALIDATION ERRORS:", form.formState.errors);
+}, [form.formState.errors]);
   const [ageValue, setAgeValue] = useState<string>('');
   const [ageUnit, setAgeUnit] = useState<'years' | 'months' | 'days'>('years');
   const [imagePreview, setImagePreview] = useState<string | null>(null);

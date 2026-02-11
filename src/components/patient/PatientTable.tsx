@@ -18,12 +18,12 @@ interface PatientTableProps {
   onDelete: (patient: PatientListDTO) => void;
 }
 
-type SortField = 'Patient_ID' | 'Code' | 'First_name' | 'Last_Name' | 'Mobile_number' | 'Gender';
+type SortField = 'patient_ID' | 'code' | 'first_name' | 'last_Name' | 'mobile_number' | 'gender';
 
 export const PatientTable = ({ patients, searchQuery, onView, onEdit, onDelete }: PatientTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
-  const [sortField, setSortField] = useState<SortField>('Patient_ID');
+  const [sortField, setSortField] = useState<SortField>('patient_ID');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const filteredPatients = useMemo(() => {
@@ -31,11 +31,11 @@ export const PatientTable = ({ patients, searchQuery, onView, onEdit, onDelete }
     const query = searchQuery.toLowerCase();
     return patients.filter(
       (p) =>
-        p.First_name?.toLowerCase().includes(query) ||
-        p.Last_Name?.toLowerCase().includes(query) ||
-        p.Mobile_number?.includes(query) ||
-        p.Patient_ID?.toString().includes(query) ||
-        p.Code?.toLowerCase().includes(query)
+        p.first_name?.toLowerCase().includes(query) ||
+        p.last_Name?.toLowerCase().includes(query) ||
+        p.mobile_number?.includes(query) ||
+        p.patient_ID?.toString().includes(query) ||
+        p.code?.toLowerCase().includes(query)
     );
   }, [patients, searchQuery]);
 
@@ -75,25 +75,25 @@ export const PatientTable = ({ patients, searchQuery, onView, onEdit, onDelete }
         <Table>
           <TableHeader>
             <TableRow className="bg-primary/10">
-              <TableHead className="cursor-pointer hover:bg-primary/20" onClick={() => handleSort('Patient_ID')}>
-                <div className="flex items-center">ID <SortIcon field="Patient_ID" /></div>
+              <TableHead className="cursor-pointer hover:bg-primary/20" onClick={() => handleSort('patient_ID')}>
+                <div className="flex items-center">ID <SortIcon field="patient_ID" /></div>
               </TableHead>
-              <TableHead className="cursor-pointer hover:bg-primary/20" onClick={() => handleSort('Code')}>
-                <div className="flex items-center">Code <SortIcon field="Code" /></div>
+              <TableHead className="cursor-pointer hover:bg-primary/20" onClick={() => handleSort('code')}>
+                <div className="flex items-center">Code <SortIcon field="code" /></div>
               </TableHead>
               <TableHead>Title</TableHead>
-              <TableHead className="cursor-pointer hover:bg-primary/20" onClick={() => handleSort('First_name')}>
-                <div className="flex items-center">First Name <SortIcon field="First_name" /></div>
+              <TableHead className="cursor-pointer hover:bg-primary/20" onClick={() => handleSort('first_name')}>
+                <div className="flex items-center">First Name <SortIcon field="first_name" /></div>
               </TableHead>
-              <TableHead className="cursor-pointer hover:bg-primary/20" onClick={() => handleSort('Last_Name')}>
-                <div className="flex items-center">Last Name <SortIcon field="Last_Name" /></div>
+              <TableHead className="cursor-pointer hover:bg-primary/20" onClick={() => handleSort('last_Name')}>
+                <div className="flex items-center">Last Name <SortIcon field="last_Name" /></div>
               </TableHead>
-              <TableHead className="cursor-pointer hover:bg-primary/20" onClick={() => handleSort('Gender')}>
-                <div className="flex items-center">Gender <SortIcon field="Gender" /></div>
+              <TableHead className="cursor-pointer hover:bg-primary/20" onClick={() => handleSort('gender')}>
+                <div className="flex items-center">Gender <SortIcon field="gender" /></div>
               </TableHead>
               <TableHead>Age</TableHead>
-              <TableHead className="cursor-pointer hover:bg-primary/20" onClick={() => handleSort('Mobile_number')}>
-                <div className="flex items-center">Mobile <SortIcon field="Mobile_number" /></div>
+              <TableHead className="cursor-pointer hover:bg-primary/20" onClick={() => handleSort('mobile_number')}>
+                <div className="flex items-center">Mobile <SortIcon field="mobile_number" /></div>
               </TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Created By</TableHead>
@@ -111,21 +111,21 @@ export const PatientTable = ({ patients, searchQuery, onView, onEdit, onDelete }
               </TableRow>
             ) : (
               paginatedPatients.map((patient) => (
-                <TableRow key={patient.Patient_ID} className="hover:bg-muted/50">
-                  <TableCell className="font-medium">{patient.Patient_ID}</TableCell>
-                  <TableCell>{patient.Code || '-'}</TableCell>
-                  <TableCell>{patient.Title_Name || '-'}</TableCell>
-                  <TableCell>{patient.First_name || '-'}</TableCell>
-                  <TableCell>{patient.Last_Name || '-'}</TableCell>
-                  <TableCell>{patient.Gender || '-'}</TableCell>
-                  <TableCell>{patient.Age || '-'}</TableCell>
-                  <TableCell>{patient.Mobile_number || '-'}</TableCell>
+                <TableRow key={patient.patient_ID} className="hover:bg-muted/50">
+                  <TableCell className="font-medium">{patient.patient_ID}</TableCell>
+                  <TableCell>{patient.code || '-'}</TableCell>
+                  <TableCell>{patient.title_Name || '-'}</TableCell>
+                  <TableCell>{patient.first_name || '-'}</TableCell>
+                  <TableCell>{patient.last_Name || '-'}</TableCell>
+                  <TableCell>{patient.gender || '-'}</TableCell>
+                  <TableCell>{patient.age || '-'}</TableCell>
+                  <TableCell>{patient.mobile_number || '-'}</TableCell>
                   <TableCell>
-                    <Badge variant={patient.Is_Active === 1 ? 'default' : 'secondary'}>
-                      {patient.Is_Active === 1 ? 'Active' : 'Inactive'}
+                    <Badge variant={patient.is_Active === 1 ? 'default' : 'secondary'}>
+                      {patient.is_Active === 1 ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
-                  <TableCell>{patient.CreatedBy || '-'}</TableCell>
+                  <TableCell>{patient.createdBy || '-'}</TableCell>
                   <TableCell>{patient.referringdoctor || '-'}</TableCell>
                   <TableCell>{patient.organization_name || '-'}</TableCell>
                   <TableCell>

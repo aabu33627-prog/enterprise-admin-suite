@@ -80,7 +80,7 @@ const patientSchema = z.object({
   emergency: z.string().optional().default(''),
   baby: z.string().optional().default(''),
   patientimage: z.string().optional().default(''),
-  referralsource: z.string().optional().default('0'),
+  referralsource: z.number().int().optional().default(0),
   patient_uhid: z.string().optional().default(''),
   referredby_mobile_no: z.string().optional().default(''),
   referredby_name: z.string().optional().default(''),
@@ -96,6 +96,8 @@ const PatientForm = () => {
     fetchRelations, fetchConsultants, fetchReferredBy, fetchPatientCategories,
     loading,
   } = usePatientApi();
+  const [isDropdownLoaded, setIsDropdownLoaded] = useState(false);
+
 
   const isEditMode = !!id;
 
@@ -122,7 +124,7 @@ const PatientForm = () => {
     monthly_Income: '', adharno: '', healthid: '', otherid1: '', otherid2: '', otherid3: '',
     idCardType: '', staff_Number: '', remarks: '', passportno: '', passportdetails: '',
     passportexpiry: '', visano: '', visaexpiry: '', international: '', emergency: '',
-    baby: '', patientimage: '', referralsource: '0', patient_uhid: '',
+    baby: '', patientimage: '', referralsource: 0, patient_uhid: '',
     referredby_mobile_no: '', referredby_name: '',
   };
 
@@ -140,68 +142,69 @@ const PatientForm = () => {
           fetchAreas(), fetchCities(), fetchStates(), fetchRelations(), fetchPatientCategories(),
         ]);
       setDropdowns({ titles, bloodGroups, consultants, referredBy, areas, cities, states, relations, patientCategories });
+      setIsDropdownLoaded(true);
     };
     loadDropdowns();
   }, [fetchTitles, fetchBloodGroups, fetchConsultants, fetchReferredBy, fetchAreas, fetchCities, fetchStates, fetchRelations, fetchPatientCategories]);
 
   // Load patient for edit mode
   useEffect(() => {
-    if (isEditMode && id) {
+    if (isEditMode && id && isDropdownLoaded) {
       const loadPatient = async () => {
         const patient = await fetchPatientById(parseInt(id));
         if (patient) {
           // Map PatientListByIdDTO to form values
           form.reset({
-            code: patient.Code || '',
-            Title_Id: patient.Title_Id?.toString() || '',
-            first_name: patient.First_Name || '',
-            middle_name: patient.Middle_name || '',
-            last_name: patient.Last_Name || '',
-            gender: patient.Gender || '',
-            dateofbirth: patient.DateOfBirth ? patient.DateOfBirth.split('T')[0] : '',
-            age: patient.Age || '',
-            mobile_number: patient.Mobile_number || '',
-            email_id: patient.Email_id || '',
-            bloodgroup: patient.Blood_group || '',
-            marital_status: patient.Marital_status || 'Single',
-            attendent: patient.Attendent || '',
-            attend_Relationship: patient.Attend_Relationship || '',
-            Spouse_Number: patient.Spouse_Number || '',
-            address_line1: patient.Address_line1 || '',
-            address_line2: patient.Address_line2 || '',
-            zipCode: patient.ZipCode || '',
-            area_id: patient.Area_Id?.toString() || '',
-            city_Id: patient.City_Id?.toString() || '',
-            state_Id: patient.State_Id?.toString() || '',
-            country_Id: patient.Country_Id?.toString() || '',
-            consultant_id: patient.Consultant_id?.toString() || '',
-            referringDoctor_ID: patient.ReferringDoctor_ID?.toString() || '',
-            patientCategory_ID: patient.PatientCategory_ID?.toString() || '',
-            organization_ID: patient.Organization_ID?.toString() || '',
-            nextofkin: patient.NextOfKin || '',
-            relation_ID: patient.Relation_ID?.toString() || '',
-            religion_ID: patient.Religion_ID?.toString() || '',
-            education: patient.Education || '',
-            occupation: patient.Occupation || '',
-            monthly_Income: patient.Monthly_Income?.toString() || '',
-            adharno: patient.AdharNo || '',
-            healthid: patient.HealthID || '',
-            otherid1: patient.OtherID1 || '',
-            otherid2: patient.OtherID2 || '',
-            otherid3: patient.OtherID3 || '',
-            idCardType: patient.IdentityCardType || '',
-            staff_Number: patient.Staff_Number || '',
-            remarks: patient.Remarks || '',
-            passportno: patient.PassportNo || '',
-            passportdetails: patient.PassportDetails || '',
-            passportexpiry: patient.PassportExpiry ? patient.PassportExpiry.split('T')[0] : '',
-            visano: patient.VisaNo || '',
-            visaexpiry: patient.VisaExpiryDate ? patient.VisaExpiryDate.split('T')[0] : '',
+            code: patient.code || '',
+            Title_Id: patient.title_Id ? patient.title_Id.toString() : "",
+            first_name: patient.first_Name || '',
+            middle_name: patient.middle_name || '',
+            last_name: patient.last_Name || '',
+            gender: patient.gender || '',
+            dateofbirth: patient.dateOfBirth ? patient.dateOfBirth.split('T')[0] : '',
+            age: patient.age || '',
+            mobile_number: patient.mobile_number || '',
+            email_id: patient.email_id || '',
+            bloodgroup: patient.blood_group || '',
+            marital_status: patient.marital_status || 'Single',
+            attendent: patient.attendent || '',
+            attend_Relationship: patient.attend_Relationship || '',
+            Spouse_Number: patient.spouse_Number || '',
+            address_line1: patient.address_line1 || '',
+            address_line2: patient.address_line2 || '',
+            zipCode: patient.zipCode || '',
+            area_id: patient.area_Id?.toString() || '',
+            city_Id: patient.city_Id?.toString() || '1',
+            state_Id: patient.state_Id?.toString() || '',
+            country_Id: patient.country_Id?.toString() || '',
+            consultant_id: patient.consultant_id?.toString() || '',
+            referringDoctor_ID: patient.referringDoctor_ID?.toString() || '',
+            patientCategory_ID: patient.patientCategory_ID?.toString() || '',
+            organization_ID: patient.organization_ID?.toString() || '',
+            nextofkin: patient.nextOfKin || '',
+            relation_ID: patient.relation_ID?.toString() || '',
+            religion_ID: patient.religion_ID?.toString() || '',
+            education: patient.education || '',
+            occupation: patient.occupation || '',
+            monthly_Income: patient.monthly_Income?.toString() || '',
+            adharno: patient.adharNo || '',
+            healthid: patient.healthID || '',
+            otherid1: patient.otherID1 || '',
+            otherid2: patient.otherID2 || '',
+            otherid3: patient.otherID3 || '',
+            idCardType: patient.identityCardType || '',
+            staff_Number: patient.staff_Number || '',
+            remarks: patient.remarks || '',
+            passportno: patient.passportNo || '',
+            passportdetails: patient.passportDetails || '',
+            passportexpiry: patient.passportExpiry ? patient.passportExpiry.split('T')[0] : '',
+            visano: patient.visaNo || '',
+            visaexpiry: patient.visaExpiryDate ? patient.visaExpiryDate.split('T')[0] : '',
             international: patient.is_international || '',
             emergency: patient.is_emergency || '',
             baby: patient.is_baby || '',
             patientimage: '',
-            referralsource: patient.ReferralSource?.toString() || '0',
+            referralsource: patient.referralSource || 0,
             patient_uhid: '',
             referredby_mobile_no: '',
             referredby_name: '',
@@ -210,7 +213,7 @@ const PatientForm = () => {
       };
       loadPatient();
     }
-  }, [id, isEditMode, fetchPatientById, form]);
+  }, [isDropdownLoaded, id, isEditMode, fetchPatientById, form]);
 
   const handleTitleChange = (titleId: string) => {
     // Find title name from dropdown
@@ -246,82 +249,124 @@ const PatientForm = () => {
     return isNaN(num) ? null : num;
   };
 
+  const formatToDDMMYYYY = (date: string | null | undefined) => {
+  if (!date) return "";
+
+  try {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return date;
+
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  } catch {
+    return date;
+  }
+  };
+
+  const mapGender = (g: string) => {
+  if (!g) return "O";
+
+  switch (g.toLowerCase()) {
+    case "male":
+      return "M";
+    case "female":
+      return "F";
+    case "other":
+      return "O";
+    default:
+      return g;
+  }
+  };
+
   const onSubmit = async (data: PatientFormValues) => {
+    console.log(" SUBMIT BUTTON CLICKED");
+    console.log(" RAW FORM DATA:", data);
+    console.log(" VALIDATION ERRORS AT SUBMIT:", form.formState.errors);
+    console.log("ON SUBMIT TRIGGERED", data);
     try {
       if (isEditMode && id) {
         const updatePayload: PatientUpdateDTO = {
+          spousecode: data.Spouse_Number || "",
+          TPAInsurance_ID: null,
+          provision: "",
+          motheruhid: data.code,
+          Title_Id: toIntOrNull(data.Title_Id) || 1,
           code: data.code,
-          Title_Id: toIntOrNull(data.Title_Id),
           first_name: data.first_name,
-          middle_name: data.middle_name || null,
+          middle_name: data.middle_name || "",
           last_name: data.last_name,
-          gender: data.gender,
-          dateofbirth: data.dateofbirth || '',
-          age: data.age || '',
+          gender: mapGender(data.gender),
+          dateofbirth: formatToDDMMYYYY(data.dateofbirth),
+          age: data.age || "",
           consultant_id: toIntOrNull(data.consultant_id),
-          referringDoctor_ID: toIntOrNull(data.referringDoctor_ID),
-          patientCategory_ID: toIntOrNull(data.patientCategory_ID),
-          organization_ID: toIntOrNull(data.organization_ID),
-          nextofkin: data.nextofkin || null,
+          referringDoctor_ID: toIntOrNull(data.referringDoctor_ID) || null,
+          patientCategory_ID: toIntOrNull(data.patientCategory_ID) || null,
+          organization_ID: toIntOrNull(data.organization_ID) || null,
+          nextofkin: data.nextofkin || "",
           address_line1: data.address_line1,
-          address_line2: data.address_line2 || null,
-          area_id: data.area_id || null,
+          address_line2: data.address_line2 || "",
+          area_id: data.area_id || "",
           city_Id: toIntOrNull(data.city_Id),
           state_Id: toIntOrNull(data.state_Id),
           country_Id: toIntOrNull(data.country_Id),
           zipCode: data.zipCode,
           mobile_number: data.mobile_number,
-          fax_number: null,
-          email_id: data.email_id || '',
-          staff_Number: data.staff_Number || null,
-          relation_ID: toIntOrNull(data.relation_ID),
-          religion_ID: toIntOrNull(data.religion_ID),
-          education: data.education || null,
-          occupation: data.occupation || null,
+          fax_number: "",
+          email_id: data.email_id || "",
+          staff_Number: data.staff_Number || "",
+          relation_ID:  toIntOrNull(data.relation_ID) || null,
+          religion_ID:  toIntOrNull(data.religion_ID) || null,
+          education: data.education || "",
+          occupation: data.occupation || "",
           monthly_Income: toFloatOrNull(data.monthly_Income),
-          attendent: data.attendent || null,
-          marital_status: data.marital_status || 'Single',
-          attend_Relationship: data.attend_Relationship || null,
+          attendent: data.attendent || "",
+          marital_status: data.marital_status || "Single",
+          attend_Relationship: data.attend_Relationship || "",
           hospital_id: 1,
           updated_by: 1,
-          bloodgroup: data.bloodgroup || null,
+          bloodgroup: data.bloodgroup || "",
           Is_Active: 1,
-          passportno: data.passportno || null,
-          passportdetails: data.passportdetails || null,
-          visano: data.visano || null,
-          visaexpiry: data.visaexpiry || null,
-          international: data.international || null,
-          baby: data.baby || null,
-          emergency: data.emergency || null,
-          passportexpiry: data.passportexpiry || null,
-          referralsource: toIntOrNull(data.referralsource),
-          patient_uhid: data.patient_uhid || '',
+          passportno: data.passportno || "",
+          passportdetails: data.passportdetails || "",
+          visano: data.visano || "",
+          visaexpiry: formatToDDMMYYYY(data.visaexpiry),
+          international: data.international?.trim() || "N",
+          baby: data.baby?.trim() || "N",
+          emergency: data.emergency?.trim() || "N",
+          validate_Date: new Date().toISOString(),
+          passportexpiry: formatToDDMMYYYY(data.passportexpiry),
+          referralsource: data.referralsource || 0,
+          patient_uhid: data.code || "",
           referredby_mobile_no: data.referredby_mobile_no || null,
           referredby_name: data.referredby_name || null,
-          adharno: data.adharno || '',
-          healthid: data.healthid || null,
-          otherid1: data.otherid1 || null,
-          otherid2: data.otherid2 || null,
-          otherid3: data.otherid3 || null,
-          remarks: data.remarks || null,
-          idCardType: data.idCardType || '',
-        };
-        await updatePatient(updatePayload);
-        toast({ title: 'Success', description: 'Patient updated successfully' });
+          adharno: data.adharno || "",
+          healthid: data.healthid || "",
+          otherid1: data.otherid1 || "",
+          otherid2: data.otherid2 || "",
+          otherid3: data.otherid3 || "",
+          remarks: data.remarks || "",
+          idCardType: data.idCardType || ""
+      };
+      console.log(" UPDATE PAYLOAD SENT TO API:", updatePayload);
+      await updatePatient(updatePayload);
+      toast({ title: 'Success', description: 'Patient updated successfully' });
       } else {
         const createPayload: PatientCreateDTO = {
-          code: data.code || '',
+          code: data.code || 'AH2526/001233',
           Title_Id: toIntOrNull(data.Title_Id),
           first_name: data.first_name,
           middle_name: data.middle_name || null,
           last_name: data.last_name,
-          gender: data.gender,
-          dateofbirth: data.dateofbirth || '',
+          gender: mapGender(data.gender),
+          dateofbirth: formatToDDMMYYYY(data.dateofbirth) || null,
           age: data.age || '',
           consultant_id: toIntOrNull(data.consultant_id),
-          referringDoctor_ID: toIntOrNull(data.referringDoctor_ID),
-          patientCategory_ID: toIntOrNull(data.patientCategory_ID),
-          organization_ID: toIntOrNull(data.organization_ID),
+          referringDoctor_ID: toIntOrNull(data.referringDoctor_ID)|| null,
+          patientCategory_ID: toIntOrNull(data.patientCategory_ID)|| null,
+          organization_ID: toIntOrNull(data.organization_ID)|| null,
           nextofkin: data.nextofkin || null,
           address_line1: data.address_line1,
           address_line2: data.address_line2 || null,
@@ -332,7 +377,7 @@ const PatientForm = () => {
           zipCode: data.zipCode,
           mobile_number: data.mobile_number,
           fax_number: null,
-          email_id: data.email_id || '',
+          email_id: data.email_id,
           staff_Number: data.staff_Number || null,
           validate_Date: new Date().toISOString(),
           relation_ID: toIntOrNull(data.relation_ID),
@@ -346,7 +391,7 @@ const PatientForm = () => {
           hospital_id: 1,
           created_by: 1,
           bloodgroup: data.bloodgroup || null,
-          patientimage: base64ToByteArray(data.patientimage),
+          patientimage:  "MTIzNDU2Nzg5",
           passportno: data.passportno || null,
           passportdetails: data.passportdetails || null,
           visano: data.visano || null,
@@ -355,19 +400,20 @@ const PatientForm = () => {
           baby: data.baby || null,
           emergency: data.emergency || null,
           passportexpiry: data.passportexpiry || null,
-          referralsource: toIntOrNull(data.referralsource) ?? 0,
+          referralsource: data.referralsource,
           Spouse_Number: data.Spouse_Number || null,
-          patient_uhid: data.patient_uhid || '',
+          patient_uhid: data.code || 'AH2526/001233',
           referredby_mobile_no: data.referredby_mobile_no || null,
           referredby_name: data.referredby_name || null,
-          adharno: data.adharno || '',
+          adharno: data.adharno || null,
           healthid: data.healthid || null,
           otherid1: data.otherid1 || null,
           otherid2: data.otherid2 || null,
           otherid3: data.otherid3 || null,
           remarks: data.remarks || null,
-          idCardType: data.idCardType || '',
+          idCardType: data.idCardType || null,
         };
+        console.log(" CREATE PAYLOAD SENT TO API:", createPayload);
         await createPatient(createPayload);
         toast({ title: 'Success', description: 'Patient registered successfully' });
       }
@@ -415,7 +461,7 @@ const PatientForm = () => {
                   <Button type="button" variant="outline" onClick={() => navigate('/patient')}>
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={loading}>
+                  <Button type="submit" >
                     {loading ? (
                       <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</>
                     ) : (

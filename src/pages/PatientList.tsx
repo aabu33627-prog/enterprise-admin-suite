@@ -33,11 +33,11 @@ const PatientList = () => {
   }, []);
 
   const handleView = (patient: PatientListDTO) => {
-    navigate(`/patient/view/${patient.Patient_ID}`);
+    navigate(`/patient/view/${patient.patient_ID}`);
   };
 
   const handleEdit = (patient: PatientListDTO) => {
-    navigate(`/patient/edit/${patient.Patient_ID}`);
+    navigate(`/patient/edit/${patient.patient_ID}`);
   };
 
   const handleDeleteClick = (patient: PatientListDTO) => {
@@ -50,9 +50,9 @@ const PatientList = () => {
 
     try {
       await deletePatient({
-        patient_ID: patientToDelete.Patient_ID.toString(),
+        patient_ID: patientToDelete.patient_ID.toString(),
         hospital_id: 1,
-        code: patientToDelete.Code || '',
+        code: patientToDelete.code || '',
       });
       toast({ title: 'Success', description: 'Patient deleted successfully' });
       loadPatients();
@@ -115,7 +115,7 @@ const PatientList = () => {
               <AlertDialogTitle>Delete Patient</AlertDialogTitle>
               <AlertDialogDescription>
                 Are you sure you want to delete patient{' '}
-                <strong>{patientToDelete?.First_name} {patientToDelete?.Last_Name}</strong>
+                <strong>{patientToDelete?.first_name} {patientToDelete?.last_Name}</strong>
                 ? This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>

@@ -79,15 +79,15 @@ const PatientView = () => {
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-bold">
-                  {patient.First_Name} {patient.Middle_name} {patient.Last_Name}
+                  {patient.first_Name} {patient.middle_name} {patient.last_Name}
                 </h2>
-                <p className="text-muted-foreground">Patient ID: {patient.Patient_ID} | Code: {patient.Code}</p>
+                <p className="text-muted-foreground">Patient ID: {patient.patient_ID} | Code: {patient.code}</p>
                 <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="secondary">{patient.Gender}</Badge>
-                  {patient.Blood_group && <Badge variant="outline">{patient.Blood_group}</Badge>}
-                  <Badge variant="default">{patient.Marital_status || 'Single'}</Badge>
-                  <Badge variant={patient.Is_Active === 1 ? 'default' : 'secondary'}>
-                    {patient.Is_Active === 1 ? 'Active' : 'Inactive'}
+                  <Badge variant="secondary">{patient.gender}</Badge>
+                  {patient.blood_group && <Badge variant="outline">{patient.blood_group}</Badge>}
+                  <Badge variant="default">{patient.marital_status || 'Single'}</Badge>
+                  <Badge variant={patient.is_Active === 1 ? 'default' : 'secondary'}>
+                    {patient.is_Active === 1 ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>
               </div>
@@ -104,14 +104,14 @@ const PatientView = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="First Name" value={patient.First_Name} />
-              <InfoItem label="Middle Name" value={patient.Middle_name} />
-              <InfoItem label="Last Name" value={patient.Last_Name} />
-              <InfoItem label="Gender" value={patient.Gender} />
-              <InfoItem label="Date of Birth" value={formatDate(patient.DateOfBirth)} />
-              <InfoItem label="Age" value={patient.Age} />
-              <InfoItem label="Blood Group" value={patient.Blood_group} />
-              <InfoItem label="Marital Status" value={patient.Marital_status} />
+              <InfoItem label="First Name" value={patient.first_Name} />
+              <InfoItem label="Middle Name" value={patient.middle_name} />
+              <InfoItem label="Last Name" value={patient.last_Name} />
+              <InfoItem label="Gender" value={patient.gender} />
+              <InfoItem label="Date of Birth" value={formatDate(patient.dateOfBirth)} />
+              <InfoItem label="Age" value={patient.age} />
+              <InfoItem label="Blood Group" value={patient.blood_group} />
+              <InfoItem label="Marital Status" value={patient.marital_status} />
             </CardContent>
           </Card>
 
@@ -123,13 +123,13 @@ const PatientView = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="Mobile Number" value={patient.Mobile_number} />
-              <InfoItem label="Email" value={patient.Email_id} />
-              <InfoItem label="Fax Number" value={patient.Fax_number} />
-              <InfoItem label="Website" value={patient.Website} />
-              <InfoItem label="Attendant" value={patient.Attendent} />
-              <InfoItem label="Attendant Relationship" value={patient.Attend_Relationship} />
-              <InfoItem label="Spouse Number" value={patient.Spouse_Number} />
+              <InfoItem label="Mobile Number" value={patient.mobile_number} />
+              <InfoItem label="Email" value={patient.email_id} />
+              <InfoItem label="Fax Number" value={patient.fax_number} />
+              <InfoItem label="Website" value={patient.website} />
+              <InfoItem label="Attendant" value={patient.attendent} />
+              <InfoItem label="Attendant Relationship" value={patient.attend_Relationship} />
+              <InfoItem label="Spouse Number" value={patient.spouse_Number} />
             </CardContent>
           </Card>
 
@@ -141,13 +141,13 @@ const PatientView = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="Address Line 1" value={patient.Address_line1} />
-              <InfoItem label="Address Line 2" value={patient.Address_line2} />
-              <InfoItem label="Area ID" value={patient.Area_Id} />
-              <InfoItem label="City ID" value={patient.City_Id} />
-              <InfoItem label="State ID" value={patient.State_Id} />
-              <InfoItem label="Country ID" value={patient.Country_Id} />
-              <InfoItem label="Zipcode" value={patient.ZipCode} />
+              <InfoItem label="Address Line 1" value={patient.address_line1} />
+              <InfoItem label="Address Line 2" value={patient.address_line2} />
+              <InfoItem label="Area ID" value={patient.area_Id} />
+              <InfoItem label="City ID" value={patient.city_Id} />
+              <InfoItem label="State ID" value={patient.state_Id} />
+              <InfoItem label="Country ID" value={patient.country_Id} />
+              <InfoItem label="Zipcode" value={patient.zipCode} />
             </CardContent>
           </Card>
 
@@ -159,8 +159,8 @@ const PatientView = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="Next of Kin" value={patient.NextOfKin} />
-              <InfoItem label="Relation ID" value={patient.Relation_ID} />
+              <InfoItem label="Next of Kin" value={patient.nextOfKin} />
+              <InfoItem label="Relation ID" value={patient.relation_ID} />
             </CardContent>
           </Card>
 
@@ -172,15 +172,15 @@ const PatientView = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="Aadhar No" value={patient.AdharNo} />
-              <InfoItem label="Health ID" value={patient.HealthID} />
-              <InfoItem label="Other ID 1" value={patient.OtherID1} />
-              <InfoItem label="Other ID 2" value={patient.OtherID2} />
-              <InfoItem label="Other ID 3" value={patient.OtherID3} />
-              <InfoItem label="ID Card Type" value={patient.IdentityCardType} />
-              <InfoItem label="Staff Number" value={patient.Staff_Number} />
-              <InfoItem label="Old Reg No" value={patient.OldRegNo} />
-              <InfoItem label="External Ref No" value={patient.External_RefNo} />
+              <InfoItem label="Aadhar No" value={patient.adharNo} />
+              <InfoItem label="Health ID" value={patient.healthID} />
+              <InfoItem label="Other ID 1" value={patient.otherID1} />
+              <InfoItem label="Other ID 2" value={patient.otherID2} />
+              <InfoItem label="Other ID 3" value={patient.otherID3} />
+              <InfoItem label="ID Card Type" value={patient.identityCardType} />
+              <InfoItem label="Staff Number" value={patient.staff_Number} />
+              <InfoItem label="Old Reg No" value={patient.oldRegNo} />
+              <InfoItem label="External Ref No" value={patient.external_RefNo} />
             </CardContent>
           </Card>
 
@@ -192,14 +192,14 @@ const PatientView = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="Consultant ID" value={patient.Consultant_id} />
-              <InfoItem label="Referring Doctor ID" value={patient.ReferringDoctor_ID} />
-              <InfoItem label="Organization ID" value={patient.Organization_ID} />
-              <InfoItem label="Patient Category ID" value={patient.PatientCategory_ID} />
-              <InfoItem label="Referral Source" value={patient.ReferralSource} />
-              <InfoItem label="Education" value={patient.Education} />
-              <InfoItem label="Occupation" value={patient.Occupation} />
-              <InfoItem label="Monthly Income" value={patient.Monthly_Income} />
+              <InfoItem label="Consultant ID" value={patient.consultant_id} />
+              <InfoItem label="Referring Doctor ID" value={patient.referringDoctor_ID} />
+              <InfoItem label="Organization ID" value={patient.organization_ID} />
+              <InfoItem label="Patient Category ID" value={patient.patientCategory_ID} />
+              <InfoItem label="Referral Source" value={patient.referralSource} />
+              <InfoItem label="Education" value={patient.education} />
+              <InfoItem label="Occupation" value={patient.occupation} />
+              <InfoItem label="Monthly Income" value={patient.monthly_Income} />
             </CardContent>
           </Card>
 
@@ -211,11 +211,11 @@ const PatientView = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="Passport No" value={patient.PassportNo} />
-              <InfoItem label="Passport Details" value={patient.PassportDetails} />
-              <InfoItem label="Passport Expiry" value={formatDate(patient.PassportExpiry)} />
-              <InfoItem label="Visa No" value={patient.VisaNo} />
-              <InfoItem label="Visa Expiry" value={formatDate(patient.VisaExpiryDate)} />
+              <InfoItem label="Passport No" value={patient.passportNo} />
+              <InfoItem label="Passport Details" value={patient.passportDetails} />
+              <InfoItem label="Passport Expiry" value={formatDate(patient.passportExpiry)} />
+              <InfoItem label="Visa No" value={patient.visaNo} />
+              <InfoItem label="Visa Expiry" value={formatDate(patient.visaExpiryDate)} />
               <InfoItem label="International" value={patient.is_international} />
               <InfoItem label="Emergency" value={patient.is_emergency} />
               <InfoItem label="Baby" value={patient.is_baby} />
@@ -230,14 +230,14 @@ const PatientView = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              <InfoItem label="Hospital ID" value={patient.Hospital_id} />
-              <InfoItem label="Registration Date" value={formatDate(patient.Reg_Date)} />
-              <InfoItem label="Validate Date" value={formatDate(patient.Validate_Date)} />
-              <InfoItem label="Created By" value={patient.Created_by} />
-              <InfoItem label="Created Date" value={formatDate(patient.Created_date)} />
-              <InfoItem label="Updated By" value={patient.Updated_by} />
-              <InfoItem label="Updated Date" value={formatDate(patient.Updated_date)} />
-              <InfoItem label="Remarks" value={patient.Remarks} />
+              <InfoItem label="Hospital ID" value={patient.hospital_id} />
+              <InfoItem label="Registration Date" value={formatDate(patient.reg_Date)} />
+              <InfoItem label="Validate Date" value={formatDate(patient.validate_Date)} />
+              <InfoItem label="Created By" value={patient.created_by} />
+              <InfoItem label="Created Date" value={formatDate(patient.created_date)} />
+              <InfoItem label="Updated By" value={patient.updated_by} />
+              <InfoItem label="Updated Date" value={formatDate(patient.updated_date)} />
+              <InfoItem label="Remarks" value={patient.remarks} />
             </CardContent>
           </Card>
         </div>

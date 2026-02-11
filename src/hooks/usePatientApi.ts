@@ -8,8 +8,8 @@ import {
   DropdownOption,
 } from '@/types/patient';
 
-const API_BASE_URL = 'http://localhost:5226/api';
-const ADMIN_API_URL = 'http://localhost:5226/api/admin';
+const API_BASE_URL = 'http://103.14.123.247:8080/api';
+const ADMIN_API_URL = 'http://103.14.123.247:8080/api/admin';
 
 export const usePatientApi = () => {
   const [loading, setLoading] = useState(false);
@@ -111,15 +111,93 @@ export const usePatientApi = () => {
 
   // Dropdown data fetchers - calls admin API endpoints (NOT MODIFIED)
   const fetchDropdownData = useCallback(async (type: string): Promise<DropdownOption[]> => {
-    try {
-      const response = await fetch(`${ADMIN_API_URL}/${type}`);
-      if (!response.ok) throw new Error(`Failed to fetch ${type}`);
-      return await response.json();
-    } catch (err) {
-      console.warn(`API not available for ${type}`);
-      return [];
+  try {
+    const response = await fetch(`${ADMIN_API_URL}/${type}`);
+    if (!response.ok) throw new Error(`Failed to fetch ${type}`);
+
+    const data = await response.json();
+
+    switch (type.toLowerCase()) {
+
+      case 'title':
+        return data.map((t: any) => ({
+          id: t.title_Id,
+          name: t.title_Name
+        }));
+
+      case 'patientcategory':
+        return data.map((p: any) => ({
+          id: p.patientCategory_ID,
+          name: p.patientCategory_Name
+        }));
+
+      case 'bloodgroup':
+        return data.map((b: any) => ({
+          id: b.id,
+          name: b.bloodGroup
+        }));
+
+      case 'consultant':
+        return data.map((c: any) => ({
+          id: c.consultant_id,
+          name: c.first_name
+        }));
+
+      case 'referredby':
+        return data
+          .filter((r: any) => r.referred_By_Name && r.referred_By_Name.trim() !== '')
+          .map((r: any) => ({
+            id: r.patientReferral_Id,
+            name: r.referred_By_Name
+          }));
+
+      case 'area':
+        return data.map((a: any) => ({
+          id: a.area_id,
+          name: a.name
+        }));
+
+      case 'city':
+        return data.map((c: any) => ({
+          id: c.city_id,
+          name: c.name
+        }));
+
+      case 'state':
+        return data.map((s: any) => ({
+          id: s.state_id,
+          name: s.name
+        }));
+
+      case 'relation':
+        return data.map((r: any) => ({
+          id: r.relation_ID,
+          name: r.relation_Name
+        }));
+
+      case 'country':
+        return data.map((c: any) => ({
+          id: c.country_id,
+          name: c.name
+        }));
+
+      case 'organization':
+        return data.map((o: any) => ({
+          id: o.organization_id,
+          name: o.organization_name
+        }));
+
+      default:
+        console.warn(`No mapping defined for dropdown type: ${type}`);
+        return [];
     }
-  }, []);
+
+  } catch (err) {
+    console.warn(`API not available for ${type}`);
+    return [];
+  }
+}, []);
+
 
   const fetchTitles = useCallback(() => fetchDropdownData('title'), [fetchDropdownData]);
   const fetchBloodGroups = useCallback(() => fetchDropdownData('bloodgroup'), [fetchDropdownData]);
@@ -129,6 +207,8 @@ export const usePatientApi = () => {
   const fetchRelations = useCallback(() => fetchDropdownData('relation'), [fetchDropdownData]);
   const fetchConsultants = useCallback(() => fetchDropdownData('consultant'), [fetchDropdownData]);
   const fetchReferredBy = useCallback(() => fetchDropdownData('referredby'), [fetchDropdownData]);
+  const fetchCountries = useCallback(() => fetchDropdownData('country'), [fetchDropdownData]);
+  const fetchOrganizations = useCallback(() => fetchDropdownData('organization'), [fetchDropdownData]);
   const fetchPatientCategories = useCallback(() => fetchDropdownData('patientcategory'), [fetchDropdownData]);
 
   return {
@@ -144,6 +224,8 @@ export const usePatientApi = () => {
     fetchBloodGroups,
     fetchAreas,
     fetchCities,
+    fetchOrganizations,
+    fetchCountries,
     fetchStates,
     fetchRelations,
     fetchConsultants,
