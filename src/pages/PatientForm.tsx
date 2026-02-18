@@ -249,22 +249,18 @@ const PatientForm = () => {
     return isNaN(num) ? null : num;
   };
 
-  const formatToDDMMYYYY = (date: string | null | undefined) => {
-  if (!date) return "";
+  const formatToYYYYMMDD = (date: string | null | undefined) => {
+  if (!date) return null;
 
-  try {
-    const d = new Date(date);
-    if (isNaN(d.getTime())) return date;
-
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-
-    return `${day}-${month}-${year}`;
-  } catch {
+  // If already in yyyy-MM-dd format, return directly
+  if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return date;
   }
-  };
+
+  return null;
+};
+
+
 
   const mapGender = (g: string) => {
   if (!g) return "O";
@@ -293,13 +289,13 @@ const PatientForm = () => {
           TPAInsurance_ID: null,
           provision: "",
           motheruhid: data.code,
-          Title_Id: toIntOrNull(data.Title_Id) || 1,
+          Title_Id: toIntOrNull(data.Title_Id),
           code: data.code,
           first_name: data.first_name,
           middle_name: data.middle_name || "",
           last_name: data.last_name,
           gender: mapGender(data.gender),
-          dateofbirth: formatToDDMMYYYY(data.dateofbirth),
+          dateofbirth: formatToYYYYMMDD(data.dateofbirth),
           age: data.age || "",
           consultant_id: toIntOrNull(data.consultant_id),
           referringDoctor_ID: toIntOrNull(data.referringDoctor_ID) || null,
@@ -332,16 +328,16 @@ const PatientForm = () => {
           passportno: data.passportno || "",
           passportdetails: data.passportdetails || "",
           visano: data.visano || "",
-          visaexpiry: formatToDDMMYYYY(data.visaexpiry),
+          visaexpiry: formatToYYYYMMDD(data.visaexpiry),
           international: data.international?.trim() || "N",
           baby: data.baby?.trim() || "N",
           emergency: data.emergency?.trim() || "N",
           validate_Date: new Date().toISOString(),
-          passportexpiry: formatToDDMMYYYY(data.passportexpiry),
+          passportexpiry: formatToYYYYMMDD(data.passportexpiry),
           referralsource: data.referralsource || 0,
           patient_uhid: data.code || "",
-          referredby_mobile_no: data.referredby_mobile_no || null,
-          referredby_name: data.referredby_name || null,
+          referredby_mobile_no: data.referredby_mobile_no || "",
+          referredby_name: data.referredby_name || "",
           adharno: data.adharno || "",
           healthid: data.healthid || "",
           otherid1: data.otherid1 || "",
@@ -355,13 +351,13 @@ const PatientForm = () => {
       toast({ title: 'Success', description: 'Patient updated successfully' });
       } else {
         const createPayload: PatientCreateDTO = {
-          code: data.code || 'AH2526/001233',
+          code: data.code || 'AH2526/001240',
           Title_Id: toIntOrNull(data.Title_Id),
           first_name: data.first_name,
           middle_name: data.middle_name || null,
           last_name: data.last_name,
           gender: mapGender(data.gender),
-          dateofbirth: formatToDDMMYYYY(data.dateofbirth) || null,
+          dateofbirth: formatToYYYYMMDD(data.dateofbirth) || null,
           age: data.age || '',
           consultant_id: toIntOrNull(data.consultant_id),
           referringDoctor_ID: toIntOrNull(data.referringDoctor_ID)|| null,
@@ -391,18 +387,18 @@ const PatientForm = () => {
           hospital_id: 1,
           created_by: 1,
           bloodgroup: data.bloodgroup || null,
-          patientimage:  "MTIzNDU2Nzg5",
+          patientimage:  "12345678",
           passportno: data.passportno || null,
           passportdetails: data.passportdetails || null,
           visano: data.visano || null,
-          visaexpiry: data.visaexpiry || null,
+          visaexpiry: formatToYYYYMMDD(data.visaexpiry) || null,
           international: data.international || null,
           baby: data.baby || null,
           emergency: data.emergency || null,
-          passportexpiry: data.passportexpiry || null,
+          passportexpiry: formatToYYYYMMDD(data.passportexpiry) || null,
           referralsource: data.referralsource,
           Spouse_Number: data.Spouse_Number || null,
-          patient_uhid: data.code || 'AH2526/001233',
+          patient_uhid: data.code || 'AH2526/001240',
           referredby_mobile_no: data.referredby_mobile_no || null,
           referredby_name: data.referredby_name || null,
           adharno: data.adharno || null,
