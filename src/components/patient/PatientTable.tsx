@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Eye, Pencil, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Eye, Pencil, Trash2,FileText, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { PatientListDTO } from '@/types/patient';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,11 +16,12 @@ interface PatientTableProps {
   onView: (patient: PatientListDTO) => void;
   onEdit: (patient: PatientListDTO) => void;
   onDelete: (patient: PatientListDTO) => void;
+  onReport: (patient: PatientListDTO) => void;
 }
 
 type SortField = 'patient_ID' | 'code' | 'first_name' | 'last_Name' | 'mobile_number' | 'gender';
 
-export const PatientTable = ({ patients, searchQuery, onView, onEdit, onDelete }: PatientTableProps) => {
+export const PatientTable = ({ patients, searchQuery, onView, onEdit, onDelete, onReport }: PatientTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [sortField, setSortField] = useState<SortField>('patient_ID');
@@ -138,6 +139,9 @@ export const PatientTable = ({ patients, searchQuery, onView, onEdit, onDelete }
                       </Button>
                       <Button variant="ghost" size="icon" onClick={() => onDelete(patient)} title="Delete" className="text-destructive hover:text-destructive/80">
                         <Trash2 className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => onReport(patient)} title="Report" className="text-primary hover:text-primary/80">
+                        <FileText className="h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>

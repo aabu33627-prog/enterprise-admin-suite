@@ -8,8 +8,8 @@ import {
   DropdownOption,
 } from '@/types/patient';
 
-const API_BASE_URL = 'http://103.14.123.247:8080/api';
-const ADMIN_API_URL = 'http://103.14.123.247:8080/api/admin';
+const API_BASE_URL = 'https://apollo.keystone.syncdigit.co.in/api';
+const ADMIN_API_URL = 'https://apollo.keystone.syncdigit.co.in/api/admin';
 
 export const usePatientApi = () => {
   const [loading, setLoading] = useState(false);
@@ -108,6 +108,39 @@ export const usePatientApi = () => {
       setLoading(false);
     }
   }, []);
+
+  // POST Report API (Generate PDF)
+const fetchPatientReport = useCallback(async (patientId: number): Promise<void> => {
+  try {
+    const response = await fetch(`http://103.14.123.247:8080/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        outputType: "PDF",
+        reportType: "PatientReport",
+        parameters: {
+          patient_ID: patientId
+        }
+      }),
+    });
+
+    if (!response.ok) throw new Error("Failed to generate report");
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Patient_Report_${patientId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+  } catch (err) {
+    console.error("Report error:", err);
+    throw err;
+  }
+}, []);
 
   // Dropdown data fetchers - calls admin API endpoints (NOT MODIFIED)
   const fetchDropdownData = useCallback(async (type: string): Promise<DropdownOption[]> => {

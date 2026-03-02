@@ -16,7 +16,7 @@ import {
 const PatientList = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { fetchPatients, deletePatient, loading } = usePatientApi();
+  const { fetchPatients, deletePatient, loading, fetchPatientReport } = usePatientApi();
 
   const [patients, setPatients] = useState<PatientListDTO[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -64,6 +64,18 @@ const PatientList = () => {
     }
   };
 
+  const handleReport = async (patient: PatientListDTO) => {
+  try {
+    await fetchPatientReport(patient.patient_ID);
+  } catch {
+    toast({
+      title: "Error",
+      description: "Failed to generate report",
+      variant: "destructive",
+    });
+  }
+};
+
   const handleRefresh = () => {
     loadPatients();
     toast({ title: 'Refreshed', description: 'Patient list has been refreshed' });
@@ -107,6 +119,7 @@ const PatientList = () => {
           onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDeleteClick}
+          onReport={handleReport}
         />
 
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
