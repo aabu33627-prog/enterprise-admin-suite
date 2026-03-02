@@ -5,6 +5,7 @@ import { PatientListDTO } from '@/types/patient';
 import { usePatientApi } from '@/hooks/usePatientApi';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { PatientTable } from '@/components/patient/PatientTable';
+import { PatientReportModal } from '@/components/patient/PatientReportModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -16,12 +17,14 @@ import {
 const PatientList = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { fetchPatients, deletePatient, loading, fetchPatientReport } = usePatientApi();
+  const { fetchPatients, deletePatient, loading } = usePatientApi();
 
   const [patients, setPatients] = useState<PatientListDTO[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState<PatientListDTO | null>(null);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [reportPatient, setReportPatient] = useState<PatientListDTO | null>(null);
 
   const loadPatients = async () => {
     const data = await fetchPatients();
@@ -64,17 +67,10 @@ const PatientList = () => {
     }
   };
 
-  const handleReport = async (patient: PatientListDTO) => {
-  try {
-    await fetchPatientReport(patient.patient_ID);
-  } catch {
-    toast({
-      title: "Error",
-      description: "Failed to generate report",
-      variant: "destructive",
-    });
-  }
-};
+  const handleReport = (patient: PatientListDTO) => {
+    setReportPatient(patient);
+    setReportModalOpen(true);
+  };
 
   const handleRefresh = () => {
     loadPatients();
@@ -143,6 +139,12 @@ const PatientList = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <PatientReportModal
+          open={reportModalOpen}
+          onOpenChange={setReportModalOpen}
+          patient={reportPatient}
+        />
       </div>
     </DashboardLayout>
   );
