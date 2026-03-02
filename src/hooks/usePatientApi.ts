@@ -109,38 +109,30 @@ export const usePatientApi = () => {
     }
   }, []);
 
-  // POST Report API (Generate PDF)
-const fetchPatientReport = useCallback(async (patientId: number): Promise<void> => {
-  try {
-    const response = await fetch(`http://103.14.123.247:8080/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        outputType: "PDF",
-        reportType: "PatientReport",
-        parameters: {
-          patient_ID: patientId
-        }
-      }),
-    });
-
-    if (!response.ok) throw new Error("Failed to generate report");
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Patient_Report_${patientId}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-
-  } catch (err) {
-    console.error("Report error:", err);
-    throw err;
-  }
-}, []);
+  // POST Report API (Generate PDF) - opens in new tab
+  const fetchPatientReport = useCallback(async (payload: {
+    outputType: string;
+    reportType: string;
+    parameters: Record<string, any>;
+  }): Promise<void> => {
+    setLoading(true);
+    try {
+      const response = await fetch('https://apollo.keystone.syncdigit.co.in/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error('Failed to generate report');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (err) {
+      console.error('Report error:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // Dropdown data fetchers - calls admin API endpoints (NOT MODIFIED)
   const fetchDropdownData = useCallback(async (type: string): Promise<DropdownOption[]> => {
@@ -264,5 +256,6 @@ const fetchPatientReport = useCallback(async (patientId: number): Promise<void> 
     fetchConsultants,
     fetchReferredBy,
     fetchPatientCategories,
+    fetchPatientReport,
   };
 };
